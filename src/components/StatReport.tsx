@@ -1,25 +1,18 @@
-import { Close } from "@suid/icons-material";
-import {
-  Card,
-  CardContent,
-  Stack,
-  Button,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Paper,
-} from "@suid/material";
+import { Table, TableBody, TableCell, TableRow, Paper } from "@suid/material";
 import { Bar } from "solid-chartjs";
-import { Component, Show, createMemo } from "solid-js";
+import { Component, Show, createMemo, onMount } from "solid-js";
 import { Stat } from "../model/stat";
 import { colorLerp, highColor, lowColor, toCSSColor } from "../util";
+import { Chart, LinearScale } from "chart.js";
 
 const StatReport: Component<{
   stat: Stat;
   data: number[];
 }> = (props) => {
+  onMount(() => {
+    Chart.register(LinearScale);
+  });
+
   const min = createMemo(() => Math.min(...props.data));
   const max = createMemo(() => Math.max(...props.data));
 

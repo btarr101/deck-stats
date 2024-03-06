@@ -1,6 +1,5 @@
 import { Show, createSignal, type Component } from "solid-js";
 
-import styles from "./App.module.css";
 import { Box, Button, Paper, Stack, TextField } from "@suid/material";
 import { EDHRecCardData, fetchCardData } from "./repo/edhrecRepo";
 import EDHRecCardDataTable from "./components/EDHRecCardDataTable";
@@ -27,18 +26,6 @@ const getCardNameList = (deckList: string): Array<string> => {
 };
 
 const App: Component = () => {
-  const [options] = createSignal({
-    xaxis: {
-      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-    },
-  });
-  const [series] = createSignal([
-    {
-      name: "series-1",
-      data: [30, 40, 35, 50, 49, 60, 70, 91],
-    },
-  ]);
-
   const [deckList, setDeckList] = createSignal("");
   const [fetchedCardData, setFetchedCardData] = createSignal<
     EDHRecCardData[] | null
@@ -46,11 +33,9 @@ const App: Component = () => {
 
   const onClickHandler = async () => {
     const cardNames = getCardNameList(deckList());
-    console.log(cardNames);
     const cardData = await Promise.all(
       cardNames.map((cardName) => fetchCardData(cardName))
     );
-    console.log(cardData);
     setFetchedCardData(cardData);
   };
 

@@ -12,19 +12,9 @@ import {
   IconButton,
   Stack,
   Chip,
-  Link,
   Popover,
-  Paper,
-  Typography,
 } from "@suid/material";
-import {
-  Component,
-  JSXElement,
-  createSignal,
-  children,
-  For,
-  Show,
-} from "solid-js";
+import { Component, createSignal, For, Show } from "solid-js";
 import { EDHRecCardData } from "../repo/edhrecRepo";
 import {
   SortingState,
@@ -44,7 +34,7 @@ import {
   SwapVert,
 } from "@suid/icons-material";
 import { Cost, Popularity, Salt } from "../model/stat";
-import { Color, colorLerp, highColor, lowColor, toCSSColor } from "../util";
+import { colorLerp, highColor, lowColor, toCSSColor } from "../util";
 
 const EDHRecCardDataTable: Component<{ data: EDHRecCardData[] }> = (props) => {
   const [sorting, setSorting] = createSignal<SortingState>([]);
