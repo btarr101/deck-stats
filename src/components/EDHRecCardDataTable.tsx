@@ -12,6 +12,10 @@ import {
   IconButton,
   Stack,
   Chip,
+  Link,
+  Popover,
+  Paper,
+  Typography,
 } from "@suid/material";
 import {
   Component,
@@ -39,7 +43,8 @@ import {
   NavigateNext,
   SwapVert,
 } from "@suid/icons-material";
-import { aboutDecimalPlaces } from "../util";
+import { Cost, Popularity, Salt } from "../model/stat";
+import { Color, colorLerp, highColor, lowColor, toCSSColor } from "../util";
 
 const EDHRecCardDataTable: Component<{ data: EDHRecCardData[] }> = (props) => {
   const [sorting, setSorting] = createSignal<SortingState>([]);
@@ -51,26 +56,109 @@ const EDHRecCardDataTable: Component<{ data: EDHRecCardData[] }> = (props) => {
       {
         accessorKey: "name",
         header: "Card Name",
+        cell: (props) => {
+          const [anchorEl, setAnchorEl] = createSignal<Element | null>(null);
+
+          const handlePopoverOpen = (event: { currentTarget: Element }) => {
+            setAnchorEl(event.currentTarget);
+          };
+
+          const handlePopoverClose = () => {
+            setAnchorEl(null);
+          };
+
+          const open = () => Boolean(anchorEl());
+
+          return (
+            <Box>
+              <Chip
+                aria-owns={open() ? "mouse-over-popover" : undefined}
+                aria-haspopup="true"
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                onClick={() =>
+                  window.open(props.row.original.imageURI.toString())
+                }
+                label={props.getValue()}
+              />
+              <Popover
+                id="mouse-over-popover"
+                sx={{ pointerEvents: "none" }}
+                open={open()}
+                onClose={handlePopoverClose}
+                anchorEl={anchorEl()}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                disableScrollLock
+                disableRestoreFocus
+              >
+                <img
+                  src={props.row.original.imageURI.toString()}
+                  height={300}
+                />
+              </Popover>
+            </Box>
+          );
+        },
       },
       {
         accessorKey: "salt",
         header: "Saltiness (0 - 4)",
         cell: (props) => (
           <Chip
-            color="warning" //todo: COLORS
-            label={aboutDecimalPlaces(props.getValue(), 2)}
+            sx={{
+              backgroundColor: toCSSColor(
+                colorLerp(
+                  lowColor,
+                  highColor,
+                  (props.getValue() - Salt.range[0]) /
+                    (Salt.range[1] - Salt.range[0])
+                )
+              ),
+            }}
+            label={Salt.display(props.getValue())}
           />
         ),
       },
       {
         accessorKey: "price",
         header: "Cost (USD)",
-        cell: (props) => aboutDecimalPlaces(props.getValue(), 2),
+        cell: (props) => (
+          <Chip
+            sx={{
+              backgroundColor: toCSSColor(
+                colorLerp(
+                  lowColor,
+                  highColor,
+                  (props.getValue() - Cost.range[0]) /
+                    (Cost.range[1] - Cost.range[0])
+                )
+              ),
+            }}
+            label={Cost.display(props.getValue())}
+          />
+        ),
       },
       {
         accessorKey: "popularity",
-        header: "Popularity (%)",
-        cell: (props) => aboutDecimalPlaces(props.getValue(), 2),
+        header: "Popularity",
+        cell: (props) => (
+          <Chip
+            sx={{
+              backgroundColor: toCSSColor(
+                colorLerp(
+                  lowColor,
+                  highColor,
+                  (props.getValue() - Popularity.range[0]) /
+                    (Popularity.range[1] - Popularity.range[0])
+                )
+              ),
+            }}
+            label={Popularity.display(props.getValue())}
+          />
+        ),
       },
     ],
     state: {
@@ -153,7 +241,7 @@ const EDHRecCardDataTable: Component<{ data: EDHRecCardData[] }> = (props) => {
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3} align="center">
+          <TableCell colSpan={4} align="center">
             <Button
               onClick={() => table.firstPage()}
               disabled={!table.getCanPreviousPage()}

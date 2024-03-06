@@ -1,10 +1,11 @@
 import { Show, createSignal, type Component } from "solid-js";
 
 import styles from "./App.module.css";
-import { Box, Button, Stack, TextField } from "@suid/material";
+import { Box, Button, Paper, Stack, TextField } from "@suid/material";
 import { EDHRecCardData, fetchCardData } from "./repo/edhrecRepo";
 import EDHRecCardDataTable from "./components/EDHRecCardDataTable";
 import StatReport from "./components/StatReport";
+import { Cost, Popularity, Salt } from "./model/stat";
 
 /**
  * Given a raw list of cards where each card has a number and is seperated
@@ -66,13 +67,15 @@ const App: Component = () => {
         flexDirection: "column",
       }}
     >
-      <h1
-        style={{
-          "text-align": "center",
-        }}
-      >
-        DeckStats
-      </h1>
+      <Paper sx={{ zIndex: 10 }}>
+        <h1
+          style={{
+            "text-align": "center",
+          }}
+        >
+          DeckStats
+        </h1>
+      </Paper>
       <Box
         sx={{
           display: "flex",
@@ -88,11 +91,12 @@ const App: Component = () => {
           sx={{
             width: "100%",
             overflowY: "scroll",
+            paddingBottom: 2,
           }}
         >
           <TextField
-            class={styles.deckInput}
             label="Deck"
+            sx={{ marginTop: 2 }}
             value={deckList()}
             onChange={(event) => setDeckList(event.target.value)}
             placeholder="Paste your deck here"
@@ -115,26 +119,19 @@ const App: Component = () => {
         >
           <Show when={fetchedCardData()}>
             <StatReport
-              statName="Saltiness"
-              description="Ranges from 0 to 4. Has a direct negative correlation with the number of friends you have."
+              stat={Salt}
               data={(fetchedCardData() as EDHRecCardData[]).map(
                 (cardData) => cardData.salt as number
               )}
             />
             <StatReport
-              statName="Cost"
-              description={
-                'In USD. Ranges from "they are just pieces of cardboard" to you reaching into your mom' +
-                "'s " +
-                "purse."
-              }
+              stat={Cost}
               data={(fetchedCardData() as EDHRecCardData[]).map(
                 (cardData) => cardData.price as number
               )}
             />
             <StatReport
-              statName="Popularity"
-              description="% of decks including this card vs. how many decks the card could be included in. Think of that one Buzz Lightyear meme."
+              stat={Popularity}
               data={(fetchedCardData() as EDHRecCardData[]).map(
                 (cardData) => cardData.popularity as number
               )}
