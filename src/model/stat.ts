@@ -15,6 +15,7 @@ export const Salt: Stat = {
 
 export const Cost: Stat = {
     name: "Cost",
+    description: "How much the card costs (in USD).",
     display: (cost) => `$${cost.toFixed(2)}`,
     range: [0.0, 100.0],
 }
